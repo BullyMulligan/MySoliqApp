@@ -31,6 +31,7 @@ namespace MySoliqApp
         protected readonly By _buttonsSelect = By.XPath("//button[@title='Выберите']");
         protected readonly By _fieldTotalPrice = By.XPath("//input[@name='cardTotal']");
         //Tasnif Page
+        protected readonly By _buttonCategoryCountPage = By.XPath("//ul[@class='ant-pagination ant-pagination']//a[@rel='nofollow']");
         protected readonly By _switchSaliqLanguage =By.XPath("//span[@class='ant-dropdown-trigger Dropdown_linkStyle__2Ty3i']");
         protected readonly By _languageRu = By.XPath("//span[@class='ant-dropdown-menu-title-content']");
         protected readonly By _buttonEnter =By.XPath("//button[@type='button']");

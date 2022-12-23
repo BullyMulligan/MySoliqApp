@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -19,7 +20,7 @@ namespace MySoliqApp
         
         private By _row = By.XPath("//div[@id='check-edit']");
 
-        public void Tasnif()
+        public PsicCategory[] Tasnif(PsicCategory[] psics)
         {
             driver = new ChromeDriver(); //открываем Хром
             driver.Manage().Window.Maximize(); //открыть в полном окне
@@ -36,28 +37,48 @@ namespace MySoliqApp
             while (driver.FindElements(By.XPath("//div[@class='ant-col ant-col-7 Header_avatarPart__1jsPv']")).Count == 0) { }
 
             Click(_labelEkpu);
-            string json =
-                System.IO.File.ReadAllText("C:/Users/ipopov/RiderProjects/TestsPaymart/TestsPaymart/json/psic.json");
-            var psic = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(json);
-            driver.Navigate().GoToUrl($"https://tasnif.soliq.uz/attribute/{psic[0]}");
-            List<string> list = new List<string>();
-            for (int i = psic.Length - 1; i > 0; i--)
+            driver.Navigate().GoToUrl($"https://tasnif.soliq.uz/attribute/{psics[0]}");
+
+            try
             {
-                driver.Navigate().GoToUrl($"https://tasnif.soliq.uz/attribute/{psic[i]}");
-                if (driver.FindElements(_buttonSaveCategory).Count == 0)
+                for (int i = 0; i < psics.Length; i++)
                 {
-                    list.Add($"Error: {psic[i]}");
-                }
-                else
-                {
-                    Click(_buttonSaveCategory, 0);
-                    list.Add($"Success: {psic[i]}");
+                    if (psics[i].status==0)
+                    {
+                        driver.Navigate().GoToUrl($"https://tasnif.soliq.uz/attribute/{psics[i].psic}");
+                        if (driver.FindElements(_buttonSaveCategory).Count != 0)
+                        {
+                            for (int j = 0; j < driver.FindElements(_buttonCategoryCountPage).Count; j++)//проходим по страницам категорий
+                            {
+                                for (int k = 0; k < driver.FindElements(_buttonSaveCategory).Count; k++)//проходим по кнопкам сохранить категории
+                                {
+                                    Click(_buttonSaveCategory, 0);
+                                }
+
+                                if (driver.FindElements(_buttonCategoryCountPage).Count>j+1)//если количество кнопок больше нуля
+                                {
+                                    Click(_buttonCategoryCountPage,j+1);//жмем на кнопку следующей страницы
+                                }
+                            }
+                            psics[i].status=1;//по окончанию меняем статус
+                        }
+                        else
+                        {
+                            psics[i].status=0;
+                        }
+                    }
                 }
             }
-
-            string path_json = "C:/Users/ipopov/RiderProjects/TestsPaymart/TestsPaymart/json/test1.json";
-            string jsondata = Newtonsoft.Json.JsonConvert.SerializeObject(list);
-            File.WriteAllText(path_json, jsondata);
+            catch (Exception e)
+            {
+                MessageBox.Show("Ошибка");
+                return psics;
+                throw;
+            }
+            MessageBox.Show("Все чеки пройдены");
+            return psics;  
+            
+            
         }
         [Test]
         public Check[] MySoligUniversal( Check[] checks, InfoAboutMethod info)
@@ -75,13 +96,12 @@ namespace MySoliqApp
             Click(_buttonsSignIn, 0);
             //var checks = LoadJson(jsonName); //загружаем джейсон по названию.
             Thread.Sleep(2000); //ожидание на случай капчи
-            while (driver.FindElements(By.XPath("//li[@class='type-18 ff-rCondensedBold']")).Count <= 0)
-            {
-            } //ожидаем, пока кнопка "войти" не исчезнет
+            while (driver.FindElements(By.XPath("//li[@class='type-18 ff-rCondensedBold']")).Count <= 0) {} //ожидаем, пока кнопка "войти" не исчезнет
 
             driver.Navigate().GoToUrl("https://my.soliq.uz/cashregister/check/edit/marketplays");
             try
             {
+                
                 for (int i = 0; i < checks.Length; i++)
                 {
                     double totalPrice = 0f;
@@ -326,6 +346,12 @@ namespace MySoliqApp
                     public string attributeName { get; set; }//название продукта
                 }
             }
+        }
+
+        public class PsicCategory
+        {
+            public string psic { get; set; }
+            public  int status { get; set; }
         }
 
         public class InfoAboutMethod//класс, передающий информацию об имени файлов, включенных чекбоксах

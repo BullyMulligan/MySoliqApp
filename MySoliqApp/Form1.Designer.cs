@@ -58,26 +58,34 @@
             this.toolChecks = new System.Windows.Forms.ToolStripComboBox();
             this.labelCheck = new System.Windows.Forms.Label();
             this.tabTasnif = new System.Windows.Forms.TabPage();
+            this.buttonTasnifStart = new System.Windows.Forms.Button();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.buttonOpenPsicFile = new System.Windows.Forms.ToolStripButton();
             this.openFileJson = new System.Windows.Forms.OpenFileDialog();
             this.dataGridTextBoxColumn1 = new System.Windows.Forms.DataGridTextBoxColumn();
             this.saveDialogJson = new System.Windows.Forms.SaveFileDialog();
             this.openDialogPDF = new System.Windows.Forms.OpenFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.openPsicFile = new System.Windows.Forms.OpenFileDialog();
+            this.savePsicDialog = new System.Windows.Forms.SaveFileDialog();
             this.tabControlMain.SuspendLayout();
             this.tabMySoliq.SuspendLayout();
             this.panelProductInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridheckInfo)).BeginInit();
             this.miniToolStrip.SuspendLayout();
+            this.tabTasnif.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlMain
             // 
             this.tabControlMain.Controls.Add(this.tabMySoliq);
             this.tabControlMain.Controls.Add(this.tabTasnif);
-            this.tabControlMain.Location = new System.Drawing.Point(4, 3);
+            this.tabControlMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControlMain.Location = new System.Drawing.Point(0, 0);
             this.tabControlMain.Name = "tabControlMain";
             this.tabControlMain.SelectedIndex = 0;
-            this.tabControlMain.Size = new System.Drawing.Size(795, 449);
+            this.tabControlMain.Size = new System.Drawing.Size(798, 458);
             this.tabControlMain.TabIndex = 0;
             // 
             // tabMySoliq
@@ -97,13 +105,14 @@
             this.tabMySoliq.Location = new System.Drawing.Point(4, 25);
             this.tabMySoliq.Name = "tabMySoliq";
             this.tabMySoliq.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMySoliq.Size = new System.Drawing.Size(787, 420);
+            this.tabMySoliq.Size = new System.Drawing.Size(790, 429);
             this.tabMySoliq.TabIndex = 0;
             this.tabMySoliq.Text = "My Soliq";
             this.tabMySoliq.UseVisualStyleBackColor = true;
             // 
             // infoAboutStatusCheck
             // 
+            this.infoAboutStatusCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.infoAboutStatusCheck.BackColor = System.Drawing.Color.PowderBlue;
             this.infoAboutStatusCheck.Location = new System.Drawing.Point(470, 330);
             this.infoAboutStatusCheck.Name = "infoAboutStatusCheck";
@@ -113,6 +122,7 @@
             // 
             // buttonOpenPDF
             // 
+            this.buttonOpenPDF.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOpenPDF.BackColor = System.Drawing.Color.PeachPuff;
             this.buttonOpenPDF.Location = new System.Drawing.Point(473, 382);
             this.buttonOpenPDF.Name = "buttonOpenPDF";
@@ -134,6 +144,7 @@
             // 
             // selectStatusToStart
             // 
+            this.selectStatusToStart.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.selectStatusToStart.FormattingEnabled = true;
             this.selectStatusToStart.Items.AddRange(new object[] { "Не пройденные", "Успешные", "ИКПУ не найден", "Все, кроме успешных", "Все" });
             this.selectStatusToStart.Location = new System.Drawing.Point(473, 297);
@@ -148,6 +159,7 @@
             // 
             // buttonStart
             // 
+            this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonStart.BackColor = System.Drawing.Color.Wheat;
             this.buttonStart.Location = new System.Drawing.Point(628, 382);
             this.buttonStart.Name = "buttonStart";
@@ -227,7 +239,7 @@
             // 
             // dataGridheckInfo
             // 
-            this.dataGridheckInfo.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridheckInfo.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridheckInfo.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridheckInfo.BackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.dataGridheckInfo.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleVertical;
@@ -261,7 +273,7 @@
             this.dataGridheckInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridheckInfo.RowTemplate.Height = 24;
             this.dataGridheckInfo.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.dataGridheckInfo.Size = new System.Drawing.Size(438, 358);
+            this.dataGridheckInfo.Size = new System.Drawing.Size(438, 354);
             this.dataGridheckInfo.TabIndex = 8;
             this.dataGridheckInfo.Tag = "notVisibleBeforeOpenJson";
             this.dataGridheckInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridheckInfo_CellContentClick);
@@ -290,10 +302,9 @@
             // 
             // colStatus
             // 
-            this.colStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colStatus.HeaderText = "Статус";
             this.colStatus.Name = "colStatus";
-            this.colStatus.Width = 78;
             // 
             // miniToolStrip
             // 
@@ -303,7 +314,7 @@
             this.miniToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.jsonToolStripMenuItem });
             this.miniToolStrip.Location = new System.Drawing.Point(15, 14);
             this.miniToolStrip.Name = "miniToolStrip";
-            this.miniToolStrip.Size = new System.Drawing.Size(757, 31);
+            this.miniToolStrip.Size = new System.Drawing.Size(756, 31);
             this.miniToolStrip.TabIndex = 4;
             // 
             // jsonToolStripMenuItem
@@ -348,13 +359,48 @@
             // 
             // tabTasnif
             // 
+            this.tabTasnif.BackColor = System.Drawing.Color.AntiqueWhite;
+            this.tabTasnif.Controls.Add(this.buttonTasnifStart);
+            this.tabTasnif.Controls.Add(this.toolStrip1);
             this.tabTasnif.Location = new System.Drawing.Point(4, 25);
             this.tabTasnif.Name = "tabTasnif";
             this.tabTasnif.Padding = new System.Windows.Forms.Padding(3);
-            this.tabTasnif.Size = new System.Drawing.Size(787, 420);
+            this.tabTasnif.Size = new System.Drawing.Size(790, 429);
             this.tabTasnif.TabIndex = 1;
             this.tabTasnif.Text = "Tasnif";
-            this.tabTasnif.UseVisualStyleBackColor = true;
+            // 
+            // buttonTasnifStart
+            // 
+            this.buttonTasnifStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonTasnifStart.AutoSize = true;
+            this.buttonTasnifStart.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.buttonTasnifStart.Location = new System.Drawing.Point(640, 382);
+            this.buttonTasnifStart.Name = "buttonTasnifStart";
+            this.buttonTasnifStart.Size = new System.Drawing.Size(123, 33);
+            this.buttonTasnifStart.TabIndex = 1;
+            this.buttonTasnifStart.Text = "Запуск";
+            this.buttonTasnifStart.UseVisualStyleBackColor = false;
+            this.buttonTasnifStart.Click += new System.EventHandler(this.buttonTasnifStart_Click);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.buttonOpenPsicFile });
+            this.toolStrip1.Location = new System.Drawing.Point(3, 3);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(53, 27);
+            this.toolStrip1.TabIndex = 0;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // buttonOpenPsicFile
+            // 
+            this.buttonOpenPsicFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonOpenPsicFile.Image = ((System.Drawing.Image)(resources.GetObject("buttonOpenPsicFile.Image")));
+            this.buttonOpenPsicFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonOpenPsicFile.Name = "buttonOpenPsicFile";
+            this.buttonOpenPsicFile.Size = new System.Drawing.Size(41, 24);
+            this.buttonOpenPsicFile.Text = "Json";
+            this.buttonOpenPsicFile.Click += new System.EventHandler(this.toolStripSplitButton1_Click);
             // 
             // openFileJson
             // 
@@ -381,12 +427,17 @@
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "Rar|*rar";
             // 
+            // openPsicFile
+            // 
+            this.openPsicFile.Filter = "Json|*.json";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(798, 458);
             this.Controls.Add(this.tabControlMain);
             this.Location = new System.Drawing.Point(15, 15);
             this.Name = "Form1";
@@ -396,8 +447,21 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridheckInfo)).EndInit();
             this.miniToolStrip.ResumeLayout(false);
             this.miniToolStrip.PerformLayout();
+            this.tabTasnif.ResumeLayout(false);
+            this.tabTasnif.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.SaveFileDialog savePsicDialog;
+
+        private System.Windows.Forms.OpenFileDialog openPsicFile;
+        private System.Windows.Forms.Button buttonTasnifStart;
+
+        private System.Windows.Forms.ToolStripButton buttonOpenPsicFile;
+
+        private System.Windows.Forms.ToolStrip toolStrip1;
 
         private System.Windows.Forms.Label infoAboutStatusCheck;
 

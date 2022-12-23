@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -19,6 +20,11 @@ namespace MySoliqApp
         private string _adressJson = "";
         private string _adressPDF = "";
 
+        private List<Automatic.Check> _nullStatus = new List<Automatic.Check>();
+        private List<Automatic.Check> _successStatus = new List<Automatic.Check>();
+        private List<Automatic.Check> _notSuccessStatus = new List<Automatic.Check>();
+        private List<Automatic.Check> _notFoundPsicStatus = new List<Automatic.Check>();
+
         private int _countSuccess = 0;
         private int _countNotSuccess = 0;
         private int _countEmpty = 0;
@@ -26,6 +32,7 @@ namespace MySoliqApp
         
         
         private Automatic.Check[] _checks = Array.Empty<Automatic.Check>();
+        private Automatic.PsicCategory[] _psics = Array.Empty<Automatic.PsicCategory>();
         private WebRequest _request = new WebRequest();
         Automatic _test =new Automatic();
         private Automatic.InfoAboutMethod info = new Automatic.InfoAboutMethod();
@@ -49,6 +56,18 @@ namespace MySoliqApp
             jsonToolStripMenuItem.Text = name;
             labelCheck.Text = "Выберите номер чека";
         }
+        private void OpenPsicFile(string name)//метод, открывающий файл
+        {
+            ;//создаем массив чеков
+            using (StreamReader r = new StreamReader(openPsicFile.OpenFile()))//используем файл как поток
+            {
+                string json = r.ReadToEnd();//преобразуем его в стринг
+                Automatic.PsicCategory[] list = JsonConvert.DeserializeObject<Automatic.PsicCategory[]>(json);//сериализация джейсона в массив чеков
+                _psics = list;
+            }
+            buttonOpenPsicFile.Text = name;
+            
+        }
         
 
         private void SaveJsonFile() //метод, сохраняющий файл
@@ -56,6 +75,12 @@ namespace MySoliqApp
             saveDialogJson.ShowDialog();
             string json = JsonConvert.SerializeObject(_checks);
             File.WriteAllText(saveDialogJson.FileName, json);
+        }
+        private void SavePsicFile() //метод, сохраняющий файл
+        {
+            savePsicDialog.ShowDialog();
+            string json = JsonConvert.SerializeObject(_psics);
+            File.WriteAllText(savePsicDialog.FileName, json);
         }
        
 
@@ -83,7 +108,7 @@ namespace MySoliqApp
                     ChangeInfoAboutCheckStatus();
                     //изменяем текст подсказки
                     labelCheck.Text = "Нажмите на название json-файла и выберите номер чека\nТакже можете выбрать сортировку чеков по статусу";
-
+                    ChangeListOfChecks();
                 }
                 else
                 {
@@ -98,10 +123,15 @@ namespace MySoliqApp
 
         private void CheckCounting()
         {
-            _countEmpty= _checks.Where(i => i.status == "").Count();
-            _countSuccess = _checks.Where(i => i.status == "Success").Count();
-            _countPsicNotFound = _checks.Where(i => i.status.Contains("psic")).Count();
-            _countNotSuccess = _checks.Where(i => i.status != "Success").Count();
+            _nullStatus =_checks.Where(i => i.status == "").ToList();
+            _successStatus = _checks.Where(i => i.status == "Success").ToList();
+            _notSuccessStatus =_checks.Where(i => i.status != "Success").ToList();
+            _notFoundPsicStatus = _checks.Where(i => i.status.Contains("psic")).ToList();
+             
+            _countEmpty= _nullStatus.Count;
+            _countSuccess = _successStatus.Count;
+            _countPsicNotFound = _notFoundPsicStatus.Count;
+            _countNotSuccess = _notSuccessStatus.Count();
         }
         private void ChangeInfoAboutCheckStatus()//меняем информацию о чеках вместе с комбобоксом
         {
@@ -136,15 +166,38 @@ namespace MySoliqApp
         private void toolStripComboBox_SelectedIndexChanged(object sender, EventArgs e)//метод, меняющий значение поля информации
         {
             dataGridheckInfo.Rows.Clear();
-            for (int i = 0; i < _checks[toolChecks.SelectedIndex].product.Length; i++)
+            List<Automatic.Check> checs = new List<Automatic.Check>();
+            switch (selectTypeCheckVisible.SelectedIndex)//отталкиваемся от выбраного режима комбо-бокса
+            {
+                case 0:
+                    checs = _checks.ToList();
+                    break;
+                case 1:
+                    checs = _successStatus;
+                    break;
+                case 2:
+                    checs = _notFoundPsicStatus;
+                    break;
+                case 3:
+                    checs = _successStatus;
+                    break;
+                case 4:
+                    checs = _notSuccessStatus;
+                    break;
+                case 5:
+                    checs = _nullStatus;
+                    break;
+            }
+            //заполняем ячейки таблицы в зависимости от количества товара
+            for (int i = 0; i < checs[toolChecks.SelectedIndex].product.Length; i++)
             {
                 DataGridViewRow row = (DataGridViewRow)dataGridheckInfo.Rows[0].Clone();
-                row.Cells[1].Value =_checks[toolChecks.SelectedIndex].product[i].psic;
-                row.Cells[2].Value =_checks[toolChecks.SelectedIndex].product[i].vat;
+                row.Cells[1].Value =checs[toolChecks.SelectedIndex].product[i].psic;
+                row.Cells[2].Value =checs[toolChecks.SelectedIndex].product[i].vat;
                 dataGridheckInfo.Rows.Add(row);
             }
-            dataGridheckInfo.Rows[0].Cells[0].Value = _checks[toolChecks.SelectedIndex].qr_code_url;
-            dataGridheckInfo[3,0].Value =_checks[toolChecks.SelectedIndex].status;
+            dataGridheckInfo.Rows[0].Cells[0].Value = checs[toolChecks.SelectedIndex].qr_code_url;
+            dataGridheckInfo[3,0].Value =checs[toolChecks.SelectedIndex].status;
             dataGridheckInfo.Visible = true;
 
         }
@@ -234,94 +287,67 @@ namespace MySoliqApp
             }
         }
 
-        private void toolChecks_Click(object sender, EventArgs e)//пересчитывает число видимых чеков
+        private void ChangeListOfChecks()
         {
             toolChecks.Items.Clear();
+            switch (selectTypeCheckVisible.SelectedIndex)//смотря какой вид статуса выбран
+            {
+                case 1 :
+                    foreach (var check in _successStatus)
+                    {
+                        toolChecks.Items.Add(check.qr_code_url).ToString();
+                    }
+                    break;
+                case 2 :
+                    foreach (var check in _notFoundPsicStatus)
+                    {
+                        toolChecks.Items.Add(check.qr_code_url);
+                    }
+                    break;
+                case 3 :
+                    
+                    foreach (var check in _checks)
+                    {
+                        if (check.qr_code_url!="Success")
+                        {
+                            toolChecks.Items.Add(check.qr_code_url);
+                        }
+                    }
+                    break;
+                case 4 :
+                    foreach (var check in _nullStatus)
+                    {
+                        toolChecks.Items.Add(check.qr_code_url);
+                    }
+                    break;
+                case 0:
+                    foreach (var check in _checks)
+                    {
+                        toolChecks.Items.Add(check.qr_code_url);
+                    }
+                    break;
+            }
+        }
+        private void toolChecks_Click(object sender, EventArgs e)//пересчитывает число видимых чеков
+        {
             toolChecks.Text = "";
             dataGridheckInfo.Visible = false;
             labelProductName.Visible = false;
             labelProduct.Visible = false;
             panelProductInfo.Visible = false;
-            switch (selectTypeCheckVisible.SelectedIndex)//смотря какой вид статуса выбран
-            {
-                case 1 :
-                    
-                    for (int i = 0; i < _checks.Length; i++)
-                    {
-                        if (_checks[i].status=="Success")
-                        {
-                            toolChecks.Items.Add(_checks[i].qr_code_url);
-                        }
-                    }
-                    
-                    break;
-                case 2 :
-                    toolChecks.Items.Clear();
-                    for (int i = 0; i < _checks.Length; i++)
-                    {
-                        if (_checks[i].status.Contains("psic"))
-                        {
-                            toolChecks.Items.Add(_checks[i].qr_code_url);
-                        }
-                    }
-                    
-                    break;
-                case 3 :
-                    
-                    for (int i = 0; i < _checks.Length; i++)
-                    {
-                        if (_checks[i].status!="Success")
-                        {
-                            toolChecks.Items.Add(_checks[i].qr_code_url);
-                        }
-                    }
-                    
-                    break;
-                case 4 :
-                    for (int i = 0; i < _checks.Length; i++)
-                    {
-                        if (_checks[i].status=="")
-                        {
-                            toolChecks.Items.Add(_checks[i].qr_code_url);
-                        }
-                    }
-                    
-                    break;
-                case 0:
-                    for (int i = 0; i < _checks.Length; i++)
-                    {
-                        toolChecks.Items.Add(_checks[i].qr_code_url);
-                    }
-                    break;
-            }
         }
-
-        private void buttonStart_Click(object sender, EventArgs e)
+        private void buttonStart_Click(object sender, EventArgs e)//нажимаем на кнопку старт
         {
+            if (checkBoxes.GetItemChecked(2))//если чек-бокс 3 включен
+            {
+                string json = JsonConvert.SerializeObject(_checks);//сереализуем массив чеков в строку
+                File.WriteAllText($"{_adressJson}.backup.json", json);//делаем бэкап до запуска 
+            }
             try
             {
-                if (checkBoxes.GetItemChecked(2))//если чек-бокс 3 включен
-                {
-                    string json = JsonConvert.SerializeObject(_checks);//сереализуем массив чеков в строку
-                    File.WriteAllText($"{_adressJson}.backup.json", json);//делаем бэкап до запуска 
-                }
-
                 info._statusCheck = selectStatusToStart.SelectedIndex;//передаем информацию о выбранных для проверке статусах
                 info._auto = checkBoxes.GetItemChecked(1);//параметр автозамены ИКПУ
-                
                 _checks=_test.MySoligUniversal(_checks,info);//передаем чеки и информацию о включенных чекбоксах/функций и запускаем проход чеков
-                CheckCounting();
-                ChangeInfoAboutCheckStatus();
-                if(checkBoxes.GetItemChecked(0))
-                {
-                    string json = JsonConvert.SerializeObject(_checks);//сереализуем массив чеков в строку
-                    File.WriteAllText(_adressJson, json);//сохраняем джейсон после запуска
-                }
-                if (checkBoxes.GetItemChecked(3))//если чек-бокс 4 включен
-                {
-                    string json = JsonConvert.SerializeObject(_checks);//сереализуем массив чеков в строку
-                    File.WriteAllText($"{_adressJson}.done.json", json);//сохраняем джейсон после запуска
-                }
             }
             catch (Exception ex)
             {
@@ -333,8 +359,18 @@ namespace MySoliqApp
                 MessageBox.Show(ex.Message,"Ошибка Браузера");
                 //throw;
             }
-            
-            
+            if(checkBoxes.GetItemChecked(0))
+            {
+                string json = JsonConvert.SerializeObject(_checks);//сереализуем массив чеков в строку
+                File.WriteAllText(_adressJson, json);//сохраняем джейсон после запуска
+            }
+            if (checkBoxes.GetItemChecked(3))//если чек-бокс 4 включен
+            {
+                string json = JsonConvert.SerializeObject(_checks);//сереализуем массив чеков в строку
+                File.WriteAllText($"{_adressJson}.done.json", json);//сохраняем копию после запуска
+            }
+            CheckCounting();
+            ChangeInfoAboutCheckStatus();
         }
 
         private void selectTypeCheckVisible_SelectedIndexChanged(object sender, EventArgs e)
@@ -343,6 +379,7 @@ namespace MySoliqApp
             labelProductName.Visible = false;
             labelProduct.Visible = false;
             panelProductInfo.Visible = false;
+            ChangeListOfChecks();
         }
 
         private void button1_Click(object sender, EventArgs e)//выираем ПДФ файл
@@ -365,6 +402,40 @@ namespace MySoliqApp
             ChangeInfoAboutCheckStatus();
         }
 
-        
+
+        private void selectTypeCheckVisible_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            ChangeListOfChecks();
+        }
+
+
+        private void buttonTasnifStart_Click(object sender, EventArgs e)//кнопка запуска добавления категорий
+        {
+            _psics=_test.Tasnif(_psics);
+            SavePsicFile();
+        }
+
+        private void toolStripSplitButton1_Click(object sender, EventArgs e)//Открываем файл с псиками
+        {
+            try
+            {
+                DialogResult res = openPsicFile.ShowDialog();
+                if (res == DialogResult.OK)
+                {
+                    var psicName = openPsicFile.SafeFileName;
+                    var psicJsonAdress = openPsicFile.FileName;
+                    OpenPsicFile(psicName);
+                    //если файл успешно загружен, то делаем видимыми следующие элементы:
+                }
+                else
+                {
+                    throw new Exception("Файл не найден!");
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
