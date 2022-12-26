@@ -18,7 +18,6 @@ namespace MySoliqApp
     public class Automatic : Overloads
     {
         
-        private By _row = By.XPath("//div[@id='check-edit']");
 
         public PsicCategory[] Tasnif(PsicCategory[] psics)
         {
@@ -94,7 +93,6 @@ namespace MySoliqApp
             Click(_buttonEnterCabinet);
             Click(_buttonsEsiOrUsb, 0);
             Click(_buttonsSignIn, 0);
-            //var checks = LoadJson(jsonName); //загружаем джейсон по названию.
             Thread.Sleep(2000); //ожидание на случай капчи
             while (driver.FindElements(By.XPath("//li[@class='type-18 ff-rCondensedBold']")).Count <= 0) {} //ожидаем, пока кнопка "войти" не исчезнет
 
@@ -105,50 +103,57 @@ namespace MySoliqApp
                 for (int i = 0; i < checks.Length; i++)
                 {
                     double totalPrice = 0f;
-                    if (CheckStatus(checks[i].status,info._statusCheck))//checks[i].status != "Success") //если статус чека не Success, то проходим по чеку
+                    if (CheckStatus(checks[i].status,info._statusCheck))//проверка статус чека
                     {
                         Clear(_fieldcheckNumber); //очищаем поле номера чека
                         SendKeys(_fieldcheckNumber, checks[i].qr_code_url); //вводим номер чека
                         Click(_buttonFindCheck); //жмем кнопку поиска чека
+                        //проверка на случай зависания поиска чека
+                        if (driver.FindElements(By.XPath("//div[@class='row no-gutters text-center']")).Count==0)
+                        {
+                            Click(_buttonFindCheck); //жмем кнопку поиска чека
+                        }
                         if (driver.FindElements(By.XPath("//div[@class='toast toast-error']")).Count==0)
                         {
                             while (driver.FindElements(By.XPath("//div[@id='check-edit'][1]//input[@name='vat']")).Count==0) {} //ждем, пока кнопка с заливкой ПДФ не прогрузится
 
                             
-                            int checkCount = driver.FindElements(By.XPath("//div[@class='row no-gutters text-center']")).Count; //определяем количество товаров в чеке
+                            int checkCount = driver.FindElements(_rowProducts).Count; //определяем количество товаров в чеке
 
                             for (int j = 0; j < checkCount; j++) //прохоим по всем товарам в чеке
                             {
-                                Scroll(By.XPath($"//div[@class='row no-gutters text-center'][{j + 1}]//span[@role='textbox']"));
+                                Scroll(SelectForString(_row,j,_buttonPsicText,0));
                                 string psic = "";
-                                Clear(By.XPath($"//div[@class='row no-gutters text-center'][{j + 1}]//input[@name='vat']"));
-                                SendKeys(driver.FindElement(By.XPath($"//div[@class='row no-gutters text-center'][{j + 1}]//input[@name='vat']")), checks[i].product[j].vat);
+                                Clear(SelectForString(_row,j,_fieldVatText,0));
+                                
+                                SendKeys(SelectForString(_row,j,_fieldVatText,0), checks[i].product[j].vat);
                                 psic = $"psic({checks[i].product[j].psic}) not found";//готовим статус, если ИКПУ не найден
-                                driver.FindElement(By.XPath($"//div[@class='row no-gutters text-center'][{j + 1}]//span[@role='textbox']")).Click(); //открываем список ИКПУ
+                                driver.FindElement(SelectForString(_row,j,_buttonPsicText,0)).Click(); //открываем список ИКПУ
                                
                                 Thread.Sleep(1000);
-                                Click(By.XPath("//li[@role='option']"));
+                                
+                                Click(_labelSelectIkpu);
                                 Thread.Sleep(1000);
-                                driver.FindElement(By.XPath($"//div[@class='row no-gutters text-center'][{j + 1}]//span[@role='textbox']")).Click();
+                                driver.FindElement(SelectForString(_row,j,_buttonPsicText,0)).Click();//открываем список ИКПУ второй раз
                                 SendKeys(_fieldIkpu, checks[i].product[j].psic);//заполняем поле ИКПУ
                                 Thread.Sleep(200);
                                 
                                 if (info._auto)//если чек на автозамену ИКПУ включен, то начинаем исправлять
                                 {
-                                    if (driver.FindElements(By.XPath("//li[@role='alert']")).Count != 0)//проверяем на наличие ошибки ИКПУ
+                                    if (driver.FindElements(_messageOfError).Count != 0)//проверяем на наличие ошибки ИКПУ
                                     {
                                         int coutChange = 4;//число попыток удалить крайнее значение
                                         while (coutChange!=0)//цикл крутится, пока не попыток не останется 0
                                         {
                                             SendKeys(_fieldIkpu,Keys.Backspace);//заполняем поле ИКПУ ,без одного символа
-                                            if (driver.FindElements(By.XPath("//li[@role='alert']")).Count == 0)//если ошибки нет, и ПСИК прошел
-                                            {
+                                            if (driver.FindElements(_messageOfError).Count == 0)//если ошибки нет, и ПСИК прошел
+                                            { 
                                                 checks[i].product[j].psic = driver.FindElement(_fieldIkpu).GetAttribute("value");//если все-таки удаление чисел помогло - заменяем ИКПУ в джейсоне
                                                 break;//выходим из цикла
                                             }
                                             coutChange--;//отнимаем попытку при рохождении цикла
                                         }
-                                        if (driver.FindElements(By.XPath("//li[@role='alert']")).Count != 0)//если и после этого псика нет
+                                        if (driver.FindElements(_messageOfError).Count != 0)//если и после этого псика нет
                                         {
                                             checks[i].product[j].psic = checks[i - 1].product[0].psic;//заменяем псик ну псик из предыдущего чека
                                             Clear(_fieldIkpu);//чистим поле ИКПУ
@@ -157,24 +162,24 @@ namespace MySoliqApp
                                     }
                                 }
                                 
-                                if (driver.FindElements(By.XPath("//li[@role='alert']")).Count == 0) //если нет поля "ИКПУ не найден"
+                                if (driver.FindElements(_messageOfError).Count == 0) //если нет поля "ИКПУ не найден"
                                 {
                                     
                                     Click(_labelSelectIkpu); //жмем на лейбл ЕКПУ
                                     //Thread.Sleep(200);
                                     //Scroll(_fieldTotalPrice); //прокручиваем до тотал прайс
-                                    driver.FindElement(By.XPath($"//div[@class='row no-gutters text-center'][{j+1}]//button[@data-toggle='dropdown']")).Click();
+                                    driver.FindElement(SelectForString(_row,j,_buttonUnitText,0)).Click();
                                     //Thread.Sleep(200);
                                     
                                     //Click(_buttonUnit); //открываем поле единицы измерения
-                                    if (driver.FindElements(By.XPath($"//div[@class='row no-gutters text-center'][{j+1}]//ul[@class='dropdown-menu inner ']//a[@role='option']")).Count > 5) //Если нет лейбла об отсутсвия ед. измерения
+                                    if (driver.FindElements(By.XPath($"{_row}[{j+1}]//ul[@class='dropdown-menu inner ']//a[@role='option']")).Count > 5) //Если нет лейбла об отсутсвия ед. измерения
                                     {
-                                        driver.FindElements(By.XPath($"//div[@class='row no-gutters text-center'][{j + 1}]//span[@class='text']"))[1].Click(); //жмем на второе поле едюизмерения
+                                        driver.FindElement(SelectForString(_row,j,_labelUnitText,1)).Click(); //жмем на второе поле едюизмерения
                                         Click(_buttonInn); //открываем вкладку с ИНН
                                         //Thread.Sleep(200);
-                                        driver.FindElements(By.XPath($"//div[@class='row no-gutters text-center'][{j + 1}]//input[@role='textbox']"))[1].SendKeys(checks[i].TIN); //вводим ИНН
+                                        driver.FindElement(SelectForString(_row,j,_fieldINNtext,1)).SendKeys(checks[i].TIN); //вводим ИНН
                                         //Thread.Sleep(200);
-                                        if (driver.FindElements(By.XPath("//div[@class='row no-gutters text-center']")).Count != 0) //если нет сообщения об отсутствия поля ИНН
+                                        if (driver.FindElements(By.XPath(_row)).Count != 0) //если нет сообщения об отсутствия поля ИНН
                                         {
                                             driver.FindElements(By.XPath($"//span[text()='{checks[i].TIN}']"))[j].Click(); //жмем на лейбл ИНН
                                             //Thread.Sleep(200);
@@ -185,6 +190,7 @@ namespace MySoliqApp
                                                 AttachFile(_loadPdf, info._adressPDF); //заливаем ПДФ-файл
                                                 Scroll(_buttonSend);
                                                 Thread.Sleep(200);
+                                                
                                                 Click(_buttonSend); //жмем кнопку отправить обновленные данные
                                                 int countWhile = 0;
                                                 bool success = true;

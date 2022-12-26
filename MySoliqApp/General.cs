@@ -17,11 +17,16 @@ namespace MySoliqApp
         protected readonly By _fieldcheckNumber = By.Id("checkNumber");
         protected readonly By _buttonFindCheck = By.Id("findButton");
         protected readonly By _fieldVat = By.XPath("//input[@name='vat']");
+        protected readonly string _fieldVatText = "//input[@name='vat']";
         protected readonly By _arrowIkpu = By.XPath("//span[@class='select2-selection__arrow']");
         protected readonly By _fieldIkpu = By.XPath("//input[@class='select2-search__field']");
         protected readonly By _labelSelectIkpu = By.XPath("//li[@role='option']");
-        protected readonly By _buttonUnit = By.XPath("//div[@class='dropdown bootstrap-select form-control bs3']//button[@class='btn dropdown-toggle btn-default bs-placeholder']");
+        
+        
+        protected readonly By _buttonUnit = By.XPath("//button[@data-toggle='dropdown']");
+        protected readonly string _buttonUnitText = "//button[@data-toggle='dropdown']";
         protected readonly By _buttonInn = By.XPath("//button[@class='btn dropdown-toggle bs-placeholder btn-default']");//
+        protected readonly string _labelUnitText = "//span[@class='text']";
         protected readonly By _labelUnit = By.XPath("//span[@class='text']");
         protected readonly By _loadPdf = By.Id("zipFile");
         protected readonly By _buttonCalculate = By.Id("btnCalc");
@@ -30,6 +35,13 @@ namespace MySoliqApp
         protected readonly By _fieldVatTotal=By.XPath("//input[@name='sumVatTotal']");
         protected readonly By _buttonsSelect = By.XPath("//button[@title='Выберите']");
         protected readonly By _fieldTotalPrice = By.XPath("//input[@name='cardTotal']");
+        protected readonly By _rowProducts = By.XPath("//div[@class='row no-gutters text-center']");//продукт
+        protected readonly By _buttonPsic = By.XPath("//span[@role='textbox']");
+        protected readonly By _messageOfError = By.XPath("//li[@role='alert']");
+        protected readonly string _row = "//div[@class='row no-gutters text-center']";
+        protected readonly string _fieldINNtext = "//input[@role='textbox']";
+
+        protected readonly string _buttonPsicText = "//span[@role='textbox']";
         //Tasnif Page
         protected readonly By _buttonCategoryCountPage = By.XPath("//ul[@class='ant-pagination ant-pagination']//a[@rel='nofollow']");
         protected readonly By _switchSaliqLanguage =By.XPath("//span[@class='ant-dropdown-trigger Dropdown_linkStyle__2Ty3i']");

@@ -121,17 +121,18 @@ namespace MySoliqApp
             }
         }
 
-        private void CheckCounting()
+        private void CheckCounting()//Пересчет количества отображаемых чеков
         {
+            //создаем списки с чеками разных статусов
             _nullStatus =_checks.Where(i => i.status == "").ToList();
             _successStatus = _checks.Where(i => i.status == "Success").ToList();
             _notSuccessStatus =_checks.Where(i => i.status != "Success").ToList();
             _notFoundPsicStatus = _checks.Where(i => i.status.Contains("psic")).ToList();
-             
+             //считаем количество чеков с разными статусами
             _countEmpty= _nullStatus.Count;
             _countSuccess = _successStatus.Count;
             _countPsicNotFound = _notFoundPsicStatus.Count;
-            _countNotSuccess = _notSuccessStatus.Count();
+            _countNotSuccess = _notSuccessStatus.Count;
         }
         private void ChangeInfoAboutCheckStatus()//меняем информацию о чеках вместе с комбобоксом
         {

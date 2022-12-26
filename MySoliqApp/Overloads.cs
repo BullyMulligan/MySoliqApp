@@ -359,6 +359,11 @@ namespace MySoliqApp
             return result.ToString();
         }
 
+        public By SelectForString(string row, int indexRow, string element,int indexElement)
+        {
+            var el = By.XPath($"{row}[{indexRow+1}]{element}");
+            return el;
+        }
         public void Select(By list, By element, int arrayCount, params string[] names)
         {
 
