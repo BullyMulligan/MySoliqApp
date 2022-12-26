@@ -29,8 +29,7 @@ namespace MySoliqApp
         private int _countNotSuccess = 0;
         private int _countEmpty = 0;
         private int _countPsicNotFound = 0;
-        
-        
+
         private Automatic.Check[] _checks = Array.Empty<Automatic.Check>();
         private Automatic.PsicCategory[] _psics = Array.Empty<Automatic.PsicCategory>();
         private WebRequest _request = new WebRequest();

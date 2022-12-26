@@ -164,25 +164,16 @@ namespace MySoliqApp
                                 
                                 if (driver.FindElements(_messageOfError).Count == 0) //если нет поля "ИКПУ не найден"
                                 {
-                                    
                                     Click(_labelSelectIkpu); //жмем на лейбл ЕКПУ
-                                    //Thread.Sleep(200);
-                                    //Scroll(_fieldTotalPrice); //прокручиваем до тотал прайс
                                     driver.FindElement(SelectForString(_row,j,_buttonUnitText,0)).Click();
-                                    //Thread.Sleep(200);
-                                    
-                                    //Click(_buttonUnit); //открываем поле единицы измерения
                                     if (driver.FindElements(By.XPath($"{_row}[{j+1}]//ul[@class='dropdown-menu inner ']//a[@role='option']")).Count > 5) //Если нет лейбла об отсутсвия ед. измерения
                                     {
                                         driver.FindElement(SelectForString(_row,j,_labelUnitText,1)).Click(); //жмем на второе поле едюизмерения
                                         Click(_buttonInn); //открываем вкладку с ИНН
-                                        //Thread.Sleep(200);
                                         driver.FindElement(SelectForString(_row,j,_fieldINNtext,1)).SendKeys(checks[i].TIN); //вводим ИНН
-                                        //Thread.Sleep(200);
                                         if (driver.FindElements(By.XPath(_row)).Count != 0) //если нет сообщения об отсутствия поля ИНН
                                         {
                                             driver.FindElements(By.XPath($"//span[text()='{checks[i].TIN}']"))[j].Click(); //жмем на лейбл ИНН
-                                            //Thread.Sleep(200);
                                             totalPrice += double.Parse(driver.FindElement(By.XPath("//input[@name='price']")).GetAttribute("value").Replace('.',','));
                                             if (checkCount - j == 1) //если мы заполнили последний товар в чеке
                                             {
@@ -209,8 +200,6 @@ namespace MySoliqApp
                                                 {
                                                     checks[i].status = "Success"; //меняем статус чека в json
                                                 }
-                                                
-                                            
                                             }
                                         }
                                         else
@@ -218,14 +207,12 @@ namespace MySoliqApp
                                             checks[i].status = "bug TIN field"; //назначаем статус ошибки поля ИНН
                                             break;
                                         }
-
                                     }
                                     else
                                     {
                                         checks[i].status = $"not unit field{j + 1}"; //назначаем статус ошибки ед.значения
                                         break;
                                     }
-
                                 }
                                 else
                                 {
@@ -236,25 +223,23 @@ namespace MySoliqApp
                         }
                         else
                         {
-                            checks[i].status = "Cancel";
+                            checks[i].status = "Cancel";//меняем статус на "отмененный"
                         }
                     }
-                    //Scroll(_fieldcheckNumber);
                     Clear(_fieldcheckNumber); //очищаем поле "номер чека"
-                    driver.Navigate().GoToUrl("https://my.soliq.uz/cashregister/check/edit/marketplays");
+                    //driver.Navigate().GoToUrl("https://my.soliq.uz/cashregister/check/edit/marketplays");
                 }
             }
             catch (Exception e) //при ошибке или сбое
             {
                 //SaveJson(checks, jsonName); //сохраняем изменения json
                 Console.WriteLine(e);
-                //driver.Quit();
-                throw;
+                driver.Quit();
+                //throw;
             }
-            //driver.Quit();
+            driver.Quit();
             MessageBox.Show("Все чеки пройдены");
             return checks;
-            
             //SaveJson(checks, jsonName); //сохраняем json
         }
 
