@@ -26,6 +26,7 @@ namespace MySoliqApp
         protected readonly By _buttonUnit = By.XPath("//button[@data-toggle='dropdown']");
         protected readonly string _buttonUnitText = "//button[@data-toggle='dropdown']";
         protected readonly By _buttonInn = By.XPath("//button[@class='btn dropdown-toggle bs-placeholder btn-default']");//
+        protected readonly string _buttonInnText = "//button[@class='btn dropdown-toggle bs-placeholder btn-default']";
         protected readonly string _labelUnitText = "//span[@class='text']";
         protected readonly By _labelUnit = By.XPath("//span[@class='text']");
         protected readonly By _loadPdf = By.Id("zipFile");
@@ -40,6 +41,7 @@ namespace MySoliqApp
         protected readonly By _messageOfError = By.XPath("//li[@role='alert']");
         protected readonly string _row = "//div[@class='row no-gutters text-center']";
         protected readonly string _fieldINNtext = "//input[@role='textbox']";
+        protected readonly string _labelINN = "//a[@style='overflow-wrap: break-word;']//span[@class='text']";
 
         protected readonly string _buttonPsicText = "//span[@role='textbox']";
         //Tasnif Page
@@ -49,5 +51,9 @@ namespace MySoliqApp
         protected readonly By _buttonEnter =By.XPath("//button[@type='button']");
         protected readonly By _labelEkpu = By.XPath("//a[@href='/activities']");
         protected readonly By _buttonSaveCategory = By.XPath("//span[text()='Сохранить категорию']");
+        protected readonly By _flagFindByPsic = By.XPath("//input[@value='2']");//флаг "ищем по ИКПУ"
+        protected readonly By _fieldFindPsic = By.XPath("//input[@class='ant-input ant-select-selection-search-input']");//поле ввода ИКПУ
+        protected readonly By _messageAboutNeedChange = By.XPath("//div[@class='Search_infoText__3qrjB']");//сообщение о том, что нужно сменить икпу
+        protected readonly By _newPsic = By.XPath("//div[@class='Search_infoText__3qrjB']/p/b");//номер ИКПУ на который нужно заменить текущий ИКПУ
     }
 }

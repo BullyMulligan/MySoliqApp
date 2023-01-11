@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 
@@ -34,7 +28,6 @@ namespace MySoliqApp
         private Automatic.PsicCategory[] _psics = Array.Empty<Automatic.PsicCategory>();
         private WebRequest _request = new WebRequest();
         Automatic _test =new Automatic();
-        private Automatic.InfoAboutMethod info = new Automatic.InfoAboutMethod();
         public Form1()
         {
             InitializeComponent();
@@ -43,9 +36,9 @@ namespace MySoliqApp
             //test.MySoligUniversal(_checks,selectStatusToStart.SelectedIndex);//эта херня ломает программу
         }
         
-        private void OpenJsonFile(string name)//метод, открывающий файл
+        private void OpenJsonFileSoliq(string name)//метод, открывающий файл
         {
-            ;//создаем массив чеков
+            //создаем массив чеков
             using (StreamReader r = new StreamReader(openFileJson.OpenFile()))//используем файл как поток
             {
                 string json = r.ReadToEnd();//преобразуем его в стринг
@@ -55,16 +48,16 @@ namespace MySoliqApp
             jsonToolStripMenuItem.Text = name;
             labelCheck.Text = "Выберите номер чека";
         }
-        private void OpenPsicFile(string name)//метод, открывающий файл
+        private void OpenPsicFileTasnif(string name)//метод, открывающий файл с ПСИКами
         {
-            ;//создаем массив чеков
+            //создаем массив чеков
             using (StreamReader r = new StreamReader(openPsicFile.OpenFile()))//используем файл как поток
             {
                 string json = r.ReadToEnd();//преобразуем его в стринг
                 Automatic.PsicCategory[] list = JsonConvert.DeserializeObject<Automatic.PsicCategory[]>(json);//сериализация джейсона в массив чеков
                 _psics = list;
             }
-            buttonOpenPsicFile.Text = name;
+            buttonOpenPsic.Text = name;//меняем имя кнопки
             
         }
         
@@ -93,7 +86,7 @@ namespace MySoliqApp
                     
                     _jsonName = openFileJson.SafeFileName;
                     _adressJson = openFileJson.FileName;
-                    OpenJsonFile(_jsonName);
+                    OpenJsonFileSoliq(_jsonName);
                     //если файл успешно загружен, то делаем видимыми следующие элементы:
                     exampleJson.Visible = false;
                     toolChecks.Visible = true;
@@ -345,8 +338,10 @@ namespace MySoliqApp
             }
             try
             {
+                Automatic.InfoAboutMethod info = new Automatic.InfoAboutMethod();
                 info._statusCheck = selectStatusToStart.SelectedIndex;//передаем информацию о выбранных для проверке статусах
                 info._auto = checkBoxes.GetItemChecked(1);//параметр автозамены ИКПУ
+                info._adressPDF = openDialogPDF.FileName;
                 _checks=_test.MySoligUniversal(_checks,info);//передаем чеки и информацию о включенных чекбоксах/функций и запускаем проход чеков
             }
             catch (Exception ex)
@@ -382,12 +377,11 @@ namespace MySoliqApp
             ChangeListOfChecks();
         }
 
-        private void button1_Click(object sender, EventArgs e)//выираем ПДФ файл
+        private void button1_Click(object sender, EventArgs e)//выбираем ПДФ файл
         {
             DialogResult res = openDialogPDF.ShowDialog();
             if (res == DialogResult.OK)
             {
-                info._adressPDF = openDialogPDF.FileName;
                 buttonStart.Visible = true;
             }
             else
@@ -411,8 +405,32 @@ namespace MySoliqApp
 
         private void buttonTasnifStart_Click(object sender, EventArgs e)//кнопка запуска добавления категорий
         {
-            _psics=_test.Tasnif(_psics);
-            SavePsicFile();
+            if (checkedListTasnif.GetItemChecked(1))//если чекбокс включен
+            {
+                string json = JsonConvert.SerializeObject(_psics);//сереализуем массив чеков в строку
+                File.WriteAllText($"{openPsicFile.FileName}.backup.json", json);//делаем бэкап до запуска
+            }
+            switch (comboBoxSelectModeTasnif.SelectedIndex)
+            {
+                case 0:
+                    _psics=_test.Tasnif(_psics);
+                    break;
+                case 1:
+                    _test.TasnifChangePSIC(_psics);
+                    break;
+            }
+
+            if (checkedListTasnif.GetItemChecked(2))
+            {
+                string json = JsonConvert.SerializeObject(_psics);//сереализуем массив чеков в строку
+                File.WriteAllText($"{openPsicFile.FileName}.done.json", json);//сохраняем джейсон после запуска
+            }
+
+            if (checkedListTasnif.GetItemChecked(0)) //если чекбокс включен
+            {
+                string json = JsonConvert.SerializeObject(_psics);
+                File.WriteAllText(openPsicFile.FileName, json);
+            }
         }
 
         private void toolStripSplitButton1_Click(object sender, EventArgs e)//Открываем файл с псиками
@@ -424,7 +442,7 @@ namespace MySoliqApp
                 {
                     var psicName = openPsicFile.SafeFileName;
                     var psicJsonAdress = openPsicFile.FileName;
-                    OpenPsicFile(psicName);
+                    OpenPsicFileTasnif(psicName);
                     //если файл успешно загружен, то делаем видимыми следующие элементы:
                 }
                 else

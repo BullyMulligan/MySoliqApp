@@ -11,12 +11,63 @@ using OpenQA.Selenium.Interactions;
 using Cookie = OpenQA.Selenium.Cookie;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.DevTools.V108.IndexedDB;
 using Keys = OpenQA.Selenium.Keys;
 
 namespace MySoliqApp
 {
     public class Automatic : Overloads
     {
+        public PsicCategory[] TasnifChangePSIC(PsicCategory[] psics)
+        {
+            driver = new ChromeDriver(); //открываем Хром
+            driver.Manage().Window.Maximize(); //открыть в полном окне
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
+            driver.Manage().Timeouts().AsynchronousJavaScript = TimeSpan.FromSeconds(10);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
+            driver.Navigate().GoToUrl("https://tasnif.soliq.uz");
+            driver.Manage().Cookies.AddCookie(new Cookie("route", "e1d411c9323dc6d99ec5a609ea7ed6d2"));
+            driver.Manage().Cookies.AddCookie(new Cookie("ADRUM_BTa", "R:31|g:1b550b98-bcb2-43e4-b3d4-945997782628|n:customer1_9c28b63e-99cb-4969-b91e-d0d7809dc215"));
+            driver.Manage().Cookies.AddCookie(new Cookie("SameSite", "None"));
+            driver.Manage().Cookies.AddCookie(new Cookie("route", "086c58384ea403180bada0e20efc3336"));
+            Click(_switchSaliqLanguage, 0);//жмем кнопку языка
+            Click(_languageRu, 2);//выбираем русский
+            Click(_buttonEnter, 0);
+            Click(_buttonEnter, 0);
+            Click(_buttonEnter, 1);
+            while (driver.FindElements(By.XPath("//div[@class='ant-col ant-col-7 Header_avatarPart__1jsPv']")).Count == 0) { }//ждем, пока не введен пароль
+
+            try
+            {
+                Click(_flagFindByPsic);//кликаем на флажок "поиск по ИКПУ"
+                for (int i = 0; i < psics.Length; i++)
+                {
+                    if (psics[i].status!=1)
+                    {
+                        SendKeys(_fieldFindPsic,psics[i].psic);//вводим в поле поиска psic
+                        if (driver.FindElements(_messageAboutNeedChange).Count>0)//если появилось сообщение об изменении псика
+                        {
+                            psics[i].new_psic = driver.FindElement(_newPsic).Text;//добавляем в массив чеков новый псик
+                            psics[i].status = 2;//ставим статус "изменен"
+                        }
+                        else
+                        {
+                            psics[i].status = 1;//ставим статус "успешно"
+                        }
+                        driver.Navigate().GoToUrl("https://tasnif.soliq.uz");
+                        Click(_flagFindByPsic);//кликаем на флажок "поиск по ИКПУ"
+                    }
+                    
+                }
+                MessageBox.Show("Все чеки пройдены");//выводим сообщение, что все чеки успешно пройдены
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Ошибка \n{e}");//выводим ошибку
+            }
+            return psics;
+        }
         
 
         public PsicCategory[] Tasnif(PsicCategory[] psics)
@@ -28,8 +79,8 @@ namespace MySoliqApp
             driver.Manage().Timeouts().AsynchronousJavaScript = TimeSpan.FromSeconds(10);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
             driver.Navigate().GoToUrl("https://tasnif.soliq.uz");
-            Click(_switchSaliqLanguage, 0);
-            Click(_languageRu, 2);
+            Click(_switchSaliqLanguage, 0);//жмем кнопку языка
+            Click(_languageRu, 2);//выбираем русский
             Click(_buttonEnter, 0);
             Click(_buttonEnter, 0);
             Click(_buttonEnter, 1);
@@ -71,8 +122,6 @@ namespace MySoliqApp
             catch (Exception e)
             {
                 MessageBox.Show("Ошибка");
-                return psics;
-                throw;
             }
             MessageBox.Show("Все чеки пройдены");
             return psics;  
@@ -122,19 +171,19 @@ namespace MySoliqApp
 
                             for (int j = 0; j < checkCount; j++) //прохоим по всем товарам в чеке
                             {
-                                Scroll(SelectForString(_row,j,_buttonPsicText,0));
+                                Scroll(SelectForString(_row,j,_buttonPsicText));
                                 string psic = "";
-                                Clear(SelectForString(_row,j,_fieldVatText,0));
+                                Clear(SelectForString(_row,j,_fieldVatText));
                                 
-                                SendKeys(SelectForString(_row,j,_fieldVatText,0), checks[i].product[j].vat);
+                                SendKeys(SelectForString(_row,j,_fieldVatText), checks[i].product[j].vat);
                                 psic = $"psic({checks[i].product[j].psic}) not found";//готовим статус, если ИКПУ не найден
-                                driver.FindElement(SelectForString(_row,j,_buttonPsicText,0)).Click(); //открываем список ИКПУ
+                                driver.FindElement(SelectForString(_row,j,_buttonPsicText)).Click(); //открываем список ИКПУ
                                
                                 Thread.Sleep(1000);
                                 
                                 Click(_labelSelectIkpu);
                                 Thread.Sleep(1000);
-                                driver.FindElement(SelectForString(_row,j,_buttonPsicText,0)).Click();//открываем список ИКПУ второй раз
+                                driver.FindElement(SelectForString(_row,j,_buttonPsicText)).Click();//открываем список ИКПУ второй раз
                                 SendKeys(_fieldIkpu, checks[i].product[j].psic);//заполняем поле ИКПУ
                                 Thread.Sleep(200);
                                 
@@ -165,13 +214,15 @@ namespace MySoliqApp
                                 if (driver.FindElements(_messageOfError).Count == 0) //если нет поля "ИКПУ не найден"
                                 {
                                     Click(_labelSelectIkpu); //жмем на лейбл ЕКПУ
-                                    driver.FindElement(SelectForString(_row,j,_buttonUnitText,0)).Click();
+                                    driver.FindElements(SelectForString(_row,j,_buttonUnitText))[0].Click();
                                     if (driver.FindElements(By.XPath($"{_row}[{j+1}]//ul[@class='dropdown-menu inner ']//a[@role='option']")).Count > 5) //Если нет лейбла об отсутсвия ед. измерения
                                     {
-                                        driver.FindElement(SelectForString(_row,j,_labelUnitText,1)).Click(); //жмем на второе поле едюизмерения
-                                        Click(_buttonInn); //открываем вкладку с ИНН
-                                        driver.FindElement(SelectForString(_row,j,_fieldINNtext,1)).SendKeys(checks[i].TIN); //вводим ИНН
-                                        if (driver.FindElements(By.XPath(_row)).Count != 0) //если нет сообщения об отсутствия поля ИНН
+                                        
+                                        driver.FindElements(SelectForString(_row,j,_labelUnitText))[1].Click(); //жмем на второе поле едюизмерени
+                                        Click(SelectForString(_row,j,_buttonInnText));
+                                        //Click(_buttonInn,1); //открываем вкладку с ИНН
+                                        driver.FindElements(SelectForString(_row,j,_fieldINNtext))[1].SendKeys(checks[i].TIN); //вводим ИНН
+                                        if (driver.FindElements(By.XPath($"{_row}[{j+1}]{_labelINN}")).Count != 0) //если нет сообщения об отсутствия поля ИНН
                                         {
                                             driver.FindElements(By.XPath($"//span[text()='{checks[i].TIN}']"))[j].Click(); //жмем на лейбл ИНН
                                             totalPrice += double.Parse(driver.FindElement(By.XPath("//input[@name='price']")).GetAttribute("value").Replace('.',','));
@@ -185,11 +236,12 @@ namespace MySoliqApp
                                                 Click(_buttonSend); //жмем кнопку отправить обновленные данные
                                                 int countWhile = 0;
                                                 bool success = true;
-                                                while (driver.FindElements(By.Id("toast-container")).Count == 0  )
+                                                while (driver.FindElements(By.Id("toast-container")).Count == 0)
                                                 {
+                                                    
                                                     Thread.Sleep(200);
                                                     countWhile++;
-                                                    if (countWhile == 20)
+                                                    if (driver.FindElements(By.XPath("//div[@id='check-edit'][1]//input[@name='vat']")).Count!=0)
                                                     {
                                                         success = false;
                                                         break;
@@ -227,14 +279,13 @@ namespace MySoliqApp
                         }
                     }
                     Clear(_fieldcheckNumber); //очищаем поле "номер чека"
-                    //driver.Navigate().GoToUrl("https://my.soliq.uz/cashregister/check/edit/marketplays");
                 }
             }
             catch (Exception e) //при ошибке или сбое
             {
-                //SaveJson(checks, jsonName); //сохраняем изменения json
                 Console.WriteLine(e);
                 driver.Quit();
+                return checks;
                 //throw;
             }
             driver.Quit();
@@ -242,27 +293,6 @@ namespace MySoliqApp
             return checks;
             //SaveJson(checks, jsonName); //сохраняем json
         }
-
-        public Check[] LoadJson(string name) //метод загружающий json. Принимает имя файла
-        {
-            Check[] checks = new Check[0];
-            using (StreamReader r = new StreamReader($"/Json/{name}.json"))
-            {
-                string json = r.ReadToEnd();
-                Check[] list = JsonConvert.DeserializeObject<Check[]>(json);
-                checks = list;
-            }
-
-            return checks;
-        }
-
-        public void SaveJson(Check[] checks, string name)
-        {
-
-            string adress = $"C:/Users/ipopov/Test/TestsPaymart/Json/{name}.json";
-            string json = JsonConvert.SerializeObject(checks);
-            File.WriteAllText(adress, json);
-        } //Метод сохраняющий json, принимает имя
 
         public bool CheckStatus(string status,int indexStatus)//проверяем, проходит ли чек
         {
@@ -341,8 +371,9 @@ namespace MySoliqApp
 
         public class PsicCategory
         {
-            public string psic { get; set; }
-            public  int status { get; set; }
+            public string psic { get; set; }//получаем ИКПУ из json
+            public string new_psic { get; set; }//вставляем новый ИКПУ с tasnif
+            public  int status { get; set; }//0 - не пройден, 1 - пройден, 2 - изменен
         }
 
         public class InfoAboutMethod//класс, передающий информацию об имени файлов, включенных чекбоксах

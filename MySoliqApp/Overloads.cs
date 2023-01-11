@@ -117,7 +117,6 @@ namespace MySoliqApp
         {
             var sendingElement = driver.FindElement(element);
             sendingElement.Clear();
-
         }
 
         protected void Clear(IWebElement row, By element)
@@ -359,7 +358,7 @@ namespace MySoliqApp
             return result.ToString();
         }
 
-        public By SelectForString(string row, int indexRow, string element,int indexElement)
+        public By SelectForString(string row, int indexRow, string element)
         {
             var el = By.XPath($"{row}[{indexRow+1}]{element}");
             return el;

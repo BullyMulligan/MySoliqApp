@@ -33,6 +33,9 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabControlMain = new System.Windows.Forms.TabControl();
             this.tabMySoliq = new System.Windows.Forms.TabPage();
             this.infoAboutStatusCheck = new System.Windows.Forms.Label();
@@ -58,9 +61,18 @@
             this.toolChecks = new System.Windows.Forms.ToolStripComboBox();
             this.labelCheck = new System.Windows.Forms.Label();
             this.tabTasnif = new System.Windows.Forms.TabPage();
+            this.panelProductTasnif = new System.Windows.Forms.Panel();
+            this.labelProductInfoTasnif = new System.Windows.Forms.Label();
+            this.labelProductTasnif = new System.Windows.Forms.Label();
+            this.comboBoxSelectModeTasnif = new System.Windows.Forms.ComboBox();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.psic = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.checkedListTasnif = new System.Windows.Forms.CheckedListBox();
+            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.buttonOpenPsic = new System.Windows.Forms.ToolStripButton();
+            this.comboBoxSelectPSICTasnif = new System.Windows.Forms.ComboBox();
             this.buttonTasnifStart = new System.Windows.Forms.Button();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.buttonOpenPsicFile = new System.Windows.Forms.ToolStripButton();
             this.openFileJson = new System.Windows.Forms.OpenFileDialog();
             this.dataGridTextBoxColumn1 = new System.Windows.Forms.DataGridTextBoxColumn();
             this.saveDialogJson = new System.Windows.Forms.SaveFileDialog();
@@ -74,7 +86,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridheckInfo)).BeginInit();
             this.miniToolStrip.SuspendLayout();
             this.tabTasnif.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
+            this.panelProductTasnif.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.toolStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlMain
@@ -360,14 +374,146 @@
             // tabTasnif
             // 
             this.tabTasnif.BackColor = System.Drawing.Color.AntiqueWhite;
+            this.tabTasnif.Controls.Add(this.panelProductTasnif);
+            this.tabTasnif.Controls.Add(this.comboBoxSelectModeTasnif);
+            this.tabTasnif.Controls.Add(this.dataGridView1);
+            this.tabTasnif.Controls.Add(this.checkedListTasnif);
+            this.tabTasnif.Controls.Add(this.toolStrip2);
+            this.tabTasnif.Controls.Add(this.comboBoxSelectPSICTasnif);
             this.tabTasnif.Controls.Add(this.buttonTasnifStart);
-            this.tabTasnif.Controls.Add(this.toolStrip1);
             this.tabTasnif.Location = new System.Drawing.Point(4, 25);
             this.tabTasnif.Name = "tabTasnif";
             this.tabTasnif.Padding = new System.Windows.Forms.Padding(3);
             this.tabTasnif.Size = new System.Drawing.Size(790, 429);
             this.tabTasnif.TabIndex = 1;
             this.tabTasnif.Text = "Tasnif";
+            // 
+            // panelProductTasnif
+            // 
+            this.panelProductTasnif.BackColor = System.Drawing.Color.MistyRose;
+            this.panelProductTasnif.Controls.Add(this.labelProductInfoTasnif);
+            this.panelProductTasnif.Controls.Add(this.labelProductTasnif);
+            this.panelProductTasnif.Location = new System.Drawing.Point(461, 101);
+            this.panelProductTasnif.Name = "panelProductTasnif";
+            this.panelProductTasnif.Size = new System.Drawing.Size(301, 74);
+            this.panelProductTasnif.TabIndex = 14;
+            this.panelProductTasnif.Tag = "notVisibleBeforeOpenJson";
+            this.panelProductTasnif.Visible = false;
+            // 
+            // labelProductInfoTasnif
+            // 
+            this.labelProductInfoTasnif.Location = new System.Drawing.Point(0, 29);
+            this.labelProductInfoTasnif.Name = "labelProductInfoTasnif";
+            this.labelProductInfoTasnif.Size = new System.Drawing.Size(301, 44);
+            this.labelProductInfoTasnif.TabIndex = 1;
+            this.labelProductInfoTasnif.Text = "\r\n";
+            this.labelProductInfoTasnif.Visible = false;
+            // 
+            // labelProductTasnif
+            // 
+            this.labelProductTasnif.Location = new System.Drawing.Point(3, 0);
+            this.labelProductTasnif.Name = "labelProductTasnif";
+            this.labelProductTasnif.Size = new System.Drawing.Size(100, 23);
+            this.labelProductTasnif.TabIndex = 0;
+            this.labelProductTasnif.Tag = "notVisibleBeforeOpenJson";
+            this.labelProductTasnif.Text = "Product";
+            this.labelProductTasnif.Visible = false;
+            // 
+            // comboBoxSelectModeTasnif
+            // 
+            this.comboBoxSelectModeTasnif.FormattingEnabled = true;
+            this.comboBoxSelectModeTasnif.Items.AddRange(new object[] { "добавление категорий", "изменение ИКПУ" });
+            this.comboBoxSelectModeTasnif.Location = new System.Drawing.Point(464, 324);
+            this.comboBoxSelectModeTasnif.Name = "comboBoxSelectModeTasnif";
+            this.comboBoxSelectModeTasnif.Size = new System.Drawing.Size(298, 24);
+            this.comboBoxSelectModeTasnif.TabIndex = 13;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { this.psic, this.status });
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle5;
+            this.dataGridView1.Location = new System.Drawing.Point(15, 46);
+            this.dataGridView1.Name = "dataGridView1";
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            this.dataGridView1.RowTemplate.Height = 24;
+            this.dataGridView1.Size = new System.Drawing.Size(419, 336);
+            this.dataGridView1.TabIndex = 12;
+            // 
+            // psic
+            // 
+            this.psic.HeaderText = "psic";
+            this.psic.Name = "psic";
+            // 
+            // status
+            // 
+            this.status.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.status.HeaderText = "status";
+            this.status.Name = "status";
+            this.status.Width = 71;
+            // 
+            // checkedListTasnif
+            // 
+            this.checkedListTasnif.BackColor = System.Drawing.SystemColors.Info;
+            this.checkedListTasnif.FormattingEnabled = true;
+            this.checkedListTasnif.Items.AddRange(new object[] { "Сохранять изменения", "Авто-бэкап до запуска", "Сохранить json после запуска" });
+            this.checkedListTasnif.Location = new System.Drawing.Point(463, 213);
+            this.checkedListTasnif.Name = "checkedListTasnif";
+            this.checkedListTasnif.Size = new System.Drawing.Size(299, 89);
+            this.checkedListTasnif.TabIndex = 11;
+            this.checkedListTasnif.Tag = "notVisibleBeforeOpenJson";
+            // 
+            // toolStrip2
+            // 
+            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.buttonOpenPsic });
+            this.toolStrip2.Location = new System.Drawing.Point(3, 3);
+            this.toolStrip2.Name = "toolStrip2";
+            this.toolStrip2.Size = new System.Drawing.Size(784, 27);
+            this.toolStrip2.TabIndex = 3;
+            this.toolStrip2.Text = "toolStrip2";
+            // 
+            // buttonOpenPsic
+            // 
+            this.buttonOpenPsic.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonOpenPsic.Image = ((System.Drawing.Image)(resources.GetObject("buttonOpenPsic.Image")));
+            this.buttonOpenPsic.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonOpenPsic.Name = "buttonOpenPsic";
+            this.buttonOpenPsic.Size = new System.Drawing.Size(41, 24);
+            this.buttonOpenPsic.Text = "Json";
+            this.buttonOpenPsic.Click += new System.EventHandler(this.toolStripSplitButton1_Click);
+            // 
+            // comboBoxSelectPSICTasnif
+            // 
+            this.comboBoxSelectPSICTasnif.FormattingEnabled = true;
+            this.comboBoxSelectPSICTasnif.Items.AddRange(new object[] { "все ИКПУ", "только корректные ИКПУ", "измененные ИКПУ", "все ИКПУ, кроме корректных", "ИКПУ без статусов" });
+            this.comboBoxSelectPSICTasnif.Location = new System.Drawing.Point(464, 59);
+            this.comboBoxSelectPSICTasnif.Name = "comboBoxSelectPSICTasnif";
+            this.comboBoxSelectPSICTasnif.Size = new System.Drawing.Size(299, 24);
+            this.comboBoxSelectPSICTasnif.TabIndex = 2;
+            this.comboBoxSelectPSICTasnif.Text = "все ИКПУ";
             // 
             // buttonTasnifStart
             // 
@@ -381,26 +527,6 @@
             this.buttonTasnifStart.Text = "Запуск";
             this.buttonTasnifStart.UseVisualStyleBackColor = false;
             this.buttonTasnifStart.Click += new System.EventHandler(this.buttonTasnifStart_Click);
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.buttonOpenPsicFile });
-            this.toolStrip1.Location = new System.Drawing.Point(3, 3);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(53, 27);
-            this.toolStrip1.TabIndex = 0;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // buttonOpenPsicFile
-            // 
-            this.buttonOpenPsicFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.buttonOpenPsicFile.Image = ((System.Drawing.Image)(resources.GetObject("buttonOpenPsicFile.Image")));
-            this.buttonOpenPsicFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonOpenPsicFile.Name = "buttonOpenPsicFile";
-            this.buttonOpenPsicFile.Size = new System.Drawing.Size(41, 24);
-            this.buttonOpenPsicFile.Text = "Json";
-            this.buttonOpenPsicFile.Click += new System.EventHandler(this.toolStripSplitButton1_Click);
             // 
             // openFileJson
             // 
@@ -449,19 +575,36 @@
             this.miniToolStrip.PerformLayout();
             this.tabTasnif.ResumeLayout(false);
             this.tabTasnif.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.panelProductTasnif.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.toolStrip2.ResumeLayout(false);
+            this.toolStrip2.PerformLayout();
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.DataGridViewTextBoxColumn psic;
+        private System.Windows.Forms.DataGridViewTextBoxColumn status;
+        private System.Windows.Forms.ComboBox comboBoxSelectModeTasnif;
+        private System.Windows.Forms.Panel panelProductTasnif;
+        private System.Windows.Forms.Label labelProductInfoTasnif;
+        private System.Windows.Forms.Label labelProductTasnif;
+
+        private System.Windows.Forms.DataGridView dataGridView1;
+
+        private System.Windows.Forms.CheckedListBox checkedListTasnif;
+
+        private System.Windows.Forms.ToolStripButton buttonOpenPsic;
+
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+
+        private System.Windows.Forms.ToolStrip toolStrip2;
+
+        private System.Windows.Forms.ComboBox comboBoxSelectPSICTasnif;
 
         private System.Windows.Forms.SaveFileDialog savePsicDialog;
 
         private System.Windows.Forms.OpenFileDialog openPsicFile;
         private System.Windows.Forms.Button buttonTasnifStart;
-
-        private System.Windows.Forms.ToolStripButton buttonOpenPsicFile;
-
-        private System.Windows.Forms.ToolStrip toolStrip1;
 
         private System.Windows.Forms.Label infoAboutStatusCheck;
 
